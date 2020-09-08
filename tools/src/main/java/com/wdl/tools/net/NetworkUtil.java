@@ -34,9 +34,9 @@ public final class NetworkUtil {
      * 数据类型
      */
     public static final int NETWORK_TYPE_UNKNOWN = 0;            //未知
-    public static final int NETWORK_TYPE_DATA = 1;                //流量
-    public static final int NETWORK_TYPE_WIFI = 2;                //wifi；
-    public static final int NETWORK_TYPE_DATA_AND_WIFI = 3;     //数据流量+wifi
+    public static final int NETWORK_TYPE_DATA = 1;               //流量
+    public static final int NETWORK_TYPE_WIFI = 2;               //wifi；
+    public static final int NETWORK_TYPE_DATA_AND_WIFI = 3;      //数据流量+wifi
 
     /**
      * 各运营商Operator码
@@ -54,6 +54,7 @@ public final class NetworkUtil {
     /**
      * 获取网络运营商 cmcc.移动流量 cucc.联通流量网络 ctcc.电信流量网络 unknown.未知
      *
+     * @param context Context
      * @return operatorType
      */
     public static String networkOperatorType(Context context) {
@@ -77,7 +78,7 @@ public final class NetworkUtil {
         JSONObject info = new JSONObject();
         try {
             info.put("operatorType", getCellularOperatorType(context));
-            info.put("networkType", "" + checkNetworkConnection(context));
+            info.put("networkType", String.valueOf(checkNetworkConnection(context)));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -106,6 +107,7 @@ public final class NetworkUtil {
         }
 
         // 数据 + wifi
+        assert wifi != null;
         if (wifi.isAvailable() && isData) {
             return NETWORK_TYPE_DATA_AND_WIFI;
         } else if (wifi.isAvailable() && !isData) {
@@ -214,7 +216,7 @@ public final class NetworkUtil {
     /**
      * 查看网络是否可用
      *
-     * @param context s
+     * @param context Context
      * @return 是否可用
      */
     public static boolean isNetworkAvailable(Context context) {

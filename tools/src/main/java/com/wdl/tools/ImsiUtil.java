@@ -22,7 +22,7 @@ public class ImsiUtil {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 strImsi = "";
             } else {
-                if (context.checkPermission(Manifest.permission.READ_PHONE_STATE, 1, 0) != PackageManager.PERMISSION_GRANTED) {
+                if (context.getPackageManager().checkPermission(Manifest.permission.READ_PHONE_STATE, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
                     strImsi = "";
                 } else {
                     int defaultDataSubId = ImsiUtil.getPreDataSubId(context);

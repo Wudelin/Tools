@@ -37,6 +37,11 @@ public class CommandUtil {
 		return propValue;
 	}
 
+	/**
+	 *
+	 * @param command String
+	 * @return
+	 */
 	public static String exec(String command) {
 		BufferedOutputStream bufferedOutputStream = null;
 		BufferedInputStream bufferedInputStream = null;

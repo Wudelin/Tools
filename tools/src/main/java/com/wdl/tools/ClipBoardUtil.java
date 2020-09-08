@@ -14,7 +14,7 @@ import androidx.annotation.NonNull;
  *  任何时候剪切板只存在一个ClipData，新添加时上一个消失;可通过ClipData.addItem()添加
  */
 @SuppressWarnings("unused")
-public final class ClipBoardUtil extends WLibrary
+public final class ClipBoardUtil
 {
     private ClipBoardUtil()
     {
@@ -25,9 +25,9 @@ public final class ClipBoardUtil extends WLibrary
      *
      * @param text 文本
      */
-    public static void setPlainText(@NonNull CharSequence text)
+    public static void setPlainText(Context context,@NonNull CharSequence text)
     {
-        ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         if (cm == null)
         {
             return;
@@ -40,9 +40,9 @@ public final class ClipBoardUtil extends WLibrary
      *
      * @param intent 上下文
      */
-    public static void setIntent(@NonNull Intent intent)
+    public static void setIntent(Context context,@NonNull Intent intent)
     {
-        ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         if (cm == null)
         {
             return;
@@ -55,9 +55,9 @@ public final class ClipBoardUtil extends WLibrary
      *
      * @return 剪切板内容
      */
-    public static CharSequence getText()
+    public static CharSequence getText(Context context)
     {
-        ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         if (cm == null)
         {
             return null;
@@ -76,16 +76,16 @@ public final class ClipBoardUtil extends WLibrary
      *
      * @return 剪切板内容
      */
-    public static CharSequence getCoerceText()
+    public static CharSequence getCoerceText(Context context)
     {
-        ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         if (cm == null)
         {
             return null;
         }
         if (cm.hasPrimaryClip())
         {
-            return cm.getPrimaryClip().getItemAt(0).coerceToText(getContext());
+            return cm.getPrimaryClip().getItemAt(0).coerceToText(context);
         } else
         {
             return null;
