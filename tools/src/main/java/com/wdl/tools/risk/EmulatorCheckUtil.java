@@ -1,6 +1,8 @@
 package com.wdl.tools.risk;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
@@ -52,7 +54,7 @@ public final class EmulatorCheckUtil {
                 ++suspectCount;
                 break;
             case RESULT_EMULATOR:
-				Log.i(TAG, "flavor = " + flavorResult.value);
+                Log.i(TAG, "flavor = " + flavorResult.value);
                 return true;
         }
 
@@ -63,7 +65,7 @@ public final class EmulatorCheckUtil {
                 ++suspectCount;
                 break;
             case RESULT_EMULATOR:
-				Log.i(TAG, "model = " + modelResult.value);
+                Log.i(TAG, "model = " + modelResult.value);
                 return true;
         }
 
@@ -74,7 +76,7 @@ public final class EmulatorCheckUtil {
                 ++suspectCount;
                 break;
             case RESULT_EMULATOR:
-				Log.i(TAG, "manufacturer = " + manufacturerResult.value);
+                Log.i(TAG, "manufacturer = " + manufacturerResult.value);
                 return true;
         }
 
@@ -85,7 +87,7 @@ public final class EmulatorCheckUtil {
                 ++suspectCount;
                 break;
             case RESULT_EMULATOR:
-				Log.i(TAG, "board = " + boardResult.value);
+                Log.i(TAG, "board = " + boardResult.value);
                 return true;
         }
 
@@ -96,7 +98,7 @@ public final class EmulatorCheckUtil {
                 ++suspectCount;
                 break;
             case RESULT_EMULATOR:
-				Log.i(TAG, "platform = " + platformResult.value);
+                Log.i(TAG, "platform = " + platformResult.value);
                 return true;
         }
 
@@ -107,7 +109,7 @@ public final class EmulatorCheckUtil {
                 suspectCount += 2;//模拟器基带信息为null的情况概率相当大
                 break;
             case RESULT_EMULATOR:
-				Log.i(TAG, "baseBand = " + baseBandResult.value);
+                Log.i(TAG, "baseBand = " + baseBandResult.value);
                 return true;
         }
 
@@ -133,7 +135,7 @@ public final class EmulatorCheckUtil {
         EmulatorResult cgroupResult = checkFeaturesByCgroup();
         if (cgroupResult.result == RESULT_MAYBE_EMULATOR) ++suspectCount;
 
-        StringBuffer stringBuffer = new StringBuffer("Test start")
+        StringBuilder sb = new StringBuilder("Test start")
                 .append("\r\n").append("hardware = ").append(hardwareResult.value)
                 .append("\r\n").append("flavor = ").append(flavorResult.value)
                 .append("\r\n").append("model = ").append(modelResult.value)
@@ -148,7 +150,7 @@ public final class EmulatorCheckUtil {
                 .append("\r\n").append("hasLightSensor = ").append(hasLightSensor)
                 .append("\r\n").append("cgroupResult = ").append(cgroupResult.value)
                 .append("\r\n").append("suspectCount = ").append(suspectCount);
-		Log.i(TAG, stringBuffer.toString());
+        Log.i(TAG, sb.toString());
 
         //嫌疑值大于2，认为是模拟器，非准确值
         return suspectCount > 2;
@@ -353,5 +355,26 @@ public final class EmulatorCheckUtil {
         if (null == filter)
             return new EmulatorResult(RESULT_MAYBE_EMULATOR, null);
         return new EmulatorResult(RESULT_UNKNOWN, filter);
+    }
+
+    /**
+     * 通过电池以及温度检测
+     *
+     * @param context Context
+     * @return
+     */
+    private static EmulatorResult isAdopt(Context context) {
+        IntentFilter intentFilter = new IntentFilter(
+                Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatusIntent = context.registerReceiver(null, intentFilter);
+        int voltage = batteryStatusIntent.getIntExtra("voltage", 99999);
+        int temperature = batteryStatusIntent.getIntExtra("temperature", 99999);
+        if (((voltage == 0) && (temperature == 0))
+                || ((voltage == 10000) && (temperature == 0))) {
+            //这是通过电池的伏数和温度来判断是真机还是模拟器
+            return new EmulatorResult(RESULT_EMULATOR, null);
+        } else {
+            return new EmulatorResult(RESULT_UNKNOWN, null);
+        }
     }
 }

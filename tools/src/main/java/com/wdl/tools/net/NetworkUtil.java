@@ -10,7 +10,12 @@ import android.text.TextUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -240,4 +245,37 @@ public final class NetworkUtil {
         return tm != null && tm.getSimState() == TelephonyManager.SIM_STATE_READY;
     }
 
+    /**
+     * 检测链接的可连通性
+     *
+     * @param address url
+     * @return
+     */
+    public static boolean checkConnect(String address) {
+        Socket socket = null;
+        try {
+            URL url = new URL(address);
+            String host = url.getHost();
+            int port = url.getPort();
+            if (port == -1) {
+                port = 80;
+            }
+            socket = new Socket();
+            InetSocketAddress isa = new InetSocketAddress(InetAddress.getByName(host), port);
+
+            socket.connect(isa, 5000);
+            return socket.isConnected();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }
